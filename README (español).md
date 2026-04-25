@@ -73,4 +73,6 @@ F4 vive en ese punto medio.
 
 ---
 
-### Estructura del Proyecto (ejemplo)
+* Este proyecto se ha liberado "tal cual está"
+* No está planificado hacerle mantenimientos periódicos.
+* Se agradecen las contribuciones, pero no se garantiza que serán verificadas o incluidas.
