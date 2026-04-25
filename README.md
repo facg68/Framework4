@@ -51,4 +51,6 @@ F4 gives you that middle ground.
 
 ---
 
-### Project Structure (example)
+* This project is released as-is.
+* No active maintenance is planned.
+* Contributions are welcome, but not guaranteed to be reviewed or merged.
