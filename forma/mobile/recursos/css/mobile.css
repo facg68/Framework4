@@ -1,0 +1,422 @@
+/* Framework 4 Mobile - Parte 1: Root */
+    :root {
+        --color-principal: #007224;
+        --color-titulo: #154927;
+        --color-fuente-titulo: #ffffff;
+        --color-botonPrimario: #02576e;
+        --color-botonPrimarioHover: #46be6e;
+        --color-side-bar-menu: #42a870;
+        --color-input: #eaf5fa;
+
+        --tamano-titulo: clamp(1rem, 2vw, 1.5rem);
+        --tamano-footer: clamp(0.5rem, 1vw, 1rem);
+
+        --padding-header: 0.75rem .45rem;
+        --padding-footer: .10rem .10rem;
+
+        --alto-header: 50px;
+        --alto-titlebar: 48px;
+        --alto-footer: 70px;
+
+        --tabla-fondo-head: rgba(91, 91, 91, 1);
+        --tabla-texto-head: rgba(255, 255, 255, 1);
+        --tabla-fondo-body: rgba(234, 234, 234, 1);
+        --tabla-fondo-foot: rgba(91, 91, 91, 1);
+       
+        --tabla-borde: rgba(149, 149, 149, 1);
+        --tabla-borde-body: rgba(222, 222, 222, 1);
+        --tabla-borde-foot: rgba(149, 149, 149, 1);
+        
+        --tabla-fondo-par-body: rgba(230, 230, 230, 1);
+        --tabla-fondo-impar-body: rgb(255, 255, 255);
+
+        --tabla-texto: rgba(0, 0, 0, 1);
+        --tabla-texto-foot: rgba(255, 255, 255, 1);
+        --tabla-hover-bg: rgba(240, 240, 240, 1);              
+    }
+/* Fin - ---------------------------- */
+
+/* Parte 2: Fonts --------------------*/
+    @font-face { font-family: 'Ruda Bold'; src: url('/core/fonts/ruda_bold.otf'); }
+    @font-face { font-family: 'Ruda'; src: url('/core/fonts/ruda.otf'); }    
+/* Fin - ---------------------------- */
+
+/* Parte 3: Manejo y control del DOM  */
+    *, *::before, *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    html, body {
+        height: 100%;
+    }
+
+    body {
+        overflow: hidden; 
+        font-family: system-ui, sans-serif;
+        font-size: clamp(1rem, 2.5vw, 1.25rem);
+        line-height: 1.6;
+        background-color: #ffffff;
+        color: #333;
+    }
+
+    body.menu-open main {
+        pointer-events: none;
+        filter: blur(1px);
+    }
+/* Fin - ---------------------------- */
+
+/* Parte 4: Entorno de Apps           */
+    header {       
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: var(--alto-header);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--color-principal);
+        z-index: 5000;
+    }
+
+    header img {
+        height: var(--alto-header);
+        width: auto;
+    }
+
+    .page-title-bar {
+        position: fixed;
+        top: var(--alto-header);
+        left: 0;
+        width: 100%;
+        height: var(--alto-titlebar);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--color-titulo);
+        color: var(--color-fuente-titulo);
+        text-transform: uppercase;
+        font-weight: 800;
+        font-size: 1.05rem;
+        border-bottom: 1px solid rgba(148, 148, 148, 0.2);
+        z-index: 4000;
+    }
+
+    .page-title-bar .title {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        min-width: 0;
+        max-width: 100%;
+        padding: 0 16px;   /* 👈 aire lateral elegante */
+    }    
+
+    main {
+        position: fixed;
+        top: calc(var(--alto-header) + var(--alto-titlebar));
+        left: 0;
+        right: 0;
+        bottom: var(--alto-footer);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        background: #ffffff;
+        border-radius: 0;
+        box-shadow: none;
+        margin: 0;
+        max-width: 100%;
+    }
+
+    .footer-contextual {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: var(--alto-footer);
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        background-color: var(--color-principal);
+        z-index: 5000;
+        box-shadow: 0 -2px 6px rgba(0,0,0,0.35);
+    }
+
+    .footer-button {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        padding: 10px;
+        cursor: pointer;
+        transition: transform 0.15s ease, filter 0.15s ease;
+    }
+
+    .footer-button:active {
+        transform: scale(0.9);
+        filter: brightness(0.85);
+    }
+/* Fin - ---------------------------- */
+
+/* Parte 5: Sistema de Menú           */
+    .menu-toggle {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+        background: rgba(255, 255, 255, 0.35);
+        border-radius: 8px;
+        padding: 6px;
+        cursor: pointer;
+        backdrop-filter: blur(6px);
+        z-index: 6000;
+    }
+
+    .bar {
+        width: 22px;
+        height: 3px;
+        background-color: #fff;
+        margin: 4px 0;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -260px;
+        width: 260px;
+        height: 100%;
+        background-color: var(--color-side-bar-menu);
+        color: white;
+        padding: 2rem 1.5rem;
+        transition: 0.3s ease;
+        z-index: 7000;
+    }
+
+    .sidebar.open {
+        left: 0;
+    }
+
+    .sidebar a {
+        display: block;
+        color: white;
+        text-decoration: none;
+        margin: 12px 0;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(255,255,255,0.25);
+    }
+
+    .sidebar a:hover {
+        color: #ffeb3b;
+    }
+
+    .close-btn {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+/* Fin - ---------------------------- */
+
+/* Parte 6: Formularios               */
+    .line {
+        margin-bottom: 1rem;
+    }
+
+    label {
+        font-weight: bold;
+        margin-bottom: 0.3rem;
+        display: block;
+    }
+
+    input, select, textarea {
+        width: 100%;
+        padding: 0.6rem;
+        font-size: 1rem;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        background-color: var(--color-input);
+    }
+
+    .contenedor {
+        width: 90%;
+        margin: 0 auto;
+        box-sizing: border-box;        
+        padding: 0;
+        border: 0;
+        background: none;
+        box-sizing: border-box;
+    }   
+
+    .no-ver {
+        display: none   !important;
+        width:   0      !important;
+        height:  0      !important;
+        padding: 0      !important;
+        margin:  0      !important;
+        border:  none   !important;
+    }     
+/* Fin - ---------------------------- */
+
+/* Parte 7: Objetos Plus              */
+    .plus-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.45);
+        z-index: 8000;
+    }
+
+    .plus-overlay.active {
+        display: block;
+    }
+
+    /* Contenedor Base --------------*/
+        .objeto-plus {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+
+            background-color: #f2f2f2;
+            color: #222;
+            border-radius: 16px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+
+            width: min(320px, 90vw);
+            max-height: 70vh;
+            overflow-y: auto;
+
+            padding: 10px 0;
+            z-index: 8001;
+
+            display: none;
+        }
+
+        .objeto-plus.plus-visible {
+            display: block;
+        }
+
+        .objeto-plus.plus-visible.plus-modo-botones {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            padding: 14px;
+
+            align-items: center;   /* 👈 agrega esto */
+        }
+    /*-------------------------------*/
+
+    /* Modo Lista -------------------*/
+        .objeto-plus .plus-item {
+            display: flex;
+            align-items: center;
+
+            padding: 14px 18px;
+            cursor: pointer;
+        }
+
+        .objeto-plus .plus-item:active {
+            background-color: rgba(0,0,0,0.10);
+        }
+
+        .objeto-plus .plus-item i {
+            width: 10px;          /* 👈 columna visual para el icono */
+            text-align: center;
+            font-size: 16px;
+            margin-right: 16px;   /* 👈 aire real entre icono y texto */
+            flex-shrink: 0;
+        }
+
+        .objeto-plus .plus-item span {
+            flex: 1;
+        }
+    /*-------------------------------*/
+
+    /* Modo Botones ------------------*/
+        .objeto-plus.plus-visible.plus-modo-botones {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            padding: 14px; 
+        }
+
+        .objeto-plus.plus-visible.plus-modo-botones .plus-item {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            background-color: rgba(0,0,0,0.05);
+            border-radius: 16px;
+
+            height: 120px;   
+            padding: 14px 14px;      
+
+            font-size: 15px;
+            text-align: center;
+
+            box-sizing: border-box;
+            cursor: pointer;
+        }
+
+        .objeto-plus.plus-visible.plus-modo-botones .plus-item i {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .objeto-plus.plus-visible.plus-modo-botones .plus-item span {
+            all: unset;
+            display: block;
+            line-height: 1.35;
+            text-align: center;
+        }
+    /*-------------------------------*/
+    
+/* Fin - ---------------------------- */    
+
+/* Parte 8: Notificaciones            */
+    .swal-f4-popup {
+        border-radius: 18px !important;
+        padding: 18px !important;
+        font-family: system-ui, sans-serif;
+        box-shadow: 0 14px 40px rgba(0,0,0,0.35) !important;
+    }
+
+    .swal-f4-title {
+        font-size: 1.2rem !important;
+        font-weight: 700 !important;
+        color: #111 !important;
+    }
+
+    .swal-f4-text {
+        font-size: 1rem !important;
+        color: #333 !important;
+        line-height: 1.4;
+    }
+/* Fin - ---------------------------- */
+
+/* Parte 9: Bloqueo de Rotación */
+    #rotar-mensaje {
+        display: none;
+    }
+
+    @media screen and (orientation: landscape) {
+        #rotar-mensaje {
+            position: fixed;
+            inset: 0;
+            background: #111;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 2.5rem;
+            padding: 20px;
+            z-index: 9999;
+        }
+
+        #app {
+            display: none;
+        }
+    } 
+/* Fin - ---------------------------- */

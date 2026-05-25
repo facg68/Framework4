@@ -1,0 +1,34 @@
+<div id="plus_Fonts" class="objeto-plus">
+    <%
+        dim plus_Fonts_c, plus_Fonts_t, plus_Fonts_sql
+
+        plus_Fonts_sql = "SELECT Valor, Descripcion " & _
+                            "FROM seg_Parametros_Valores " & _
+                            "WHERE (Sistema = 'seguridad') AND (Parametro = 'title_area_font') " & _
+                        "ORDER BY Descripcion;"
+
+        set plus_Fonts_c = Server.CreateObject("ADODB.Connection")
+        plus_Fonts_c.open Application("Conn")
+            set plus_Fonts_t = plus_Fonts_c.execute(plus_Fonts_sql)
+                if not (plus_Fonts_t.bof or plus_Fonts_t.eof) then
+                    Do
+                        %>
+                            <div class="plus-item"
+                                onclick="plus_Fonts_return('<%= plus_Fonts_t("Valor") %>', obtenerOrigenPlus(this))">
+                                <span style="font-family: '<%= plus_Fonts_t("Valor") %>'; font-size: 18px;"><%= plus_Fonts_t("Descripcion") %></span>
+                            </div>
+                        <%
+
+                        plus_Fonts_t.MoveNext
+                    Loop until plus_Fonts_t.eof
+                end if
+            plus_Fonts_t.close: set plus_Fonts_t = nothing
+        plus_Fonts_c.close: set plus_Fonts_c = nothing    
+    %>
+</div>
+
+<script>
+    function plus_Fonts_return(font, invocador) {
+        document.getElementById(invocador).value = font;
+    }
+</script>

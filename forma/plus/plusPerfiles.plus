@@ -1,0 +1,106 @@
+        <!-- Este PLUS es un Plus de Sistema -->
+            <!-- 
+                Plus: Perfiles 
+                
+                Puede modificarse pero no debe borrarse ya que
+                el Framework 4 lo usa para presentar opciones
+                del Usuario Conectado.
+            -->
+            
+            <%
+                Function plus_perfiles_Saldos()
+                    '
+                    ' Verificamos que el usuario conectado tenga acceso al sistema de Presupuesto
+                    '
+                    dim plus_perfiles_Saldos_con, plus_perfiles_Saldos_t, plus_perfiles_Saldos_cmdString
+
+                    plus_perfiles_Saldos_cmdString = "SELECT usuVerSaldos FROM seg_Usuarios WHERE usuCodigo = '" & Request.Cookies("Usuario") & "';"
+                    plus_perfiles_Saldos = False
+
+                    set plus_perfiles_Saldos_con = Server.CreateObject("ADODB.Connection")
+                    plus_perfiles_Saldos_con.open Application("Conn")
+
+                        set plus_perfiles_Saldos_t = plus_perfiles_Saldos_con.execute(plus_perfiles_Saldos_cmdString)
+
+                            if not (plus_perfiles_Saldos_t.bof or plus_perfiles_Saldos_t.eof) then
+                                if plus_perfiles_Saldos_t("usuVerSaldos") = 1 then
+                                    plus_perfiles_Saldos = True
+                                end if
+                            end if
+
+                        plus_perfiles_Saldos_t.close: set plus_perfiles_Saldos_t = nothing
+
+                    plus_perfiles_Saldos_con.close: set plus_perfiles_Saldos_con = nothing
+                end Function    
+            %>
+
+            <div id="plus_perfiles" class="objeto-plus">
+                <% if plus_perfiles_Saldos() = True then %>
+                    <div class="plus-item" onclick="plus_perfiles_AbrirSaldos()">
+                        <i class="fa-solid fa-dollar-sign"></i>
+                        <span>Ver Saldos</span>
+                    </div>
+                <% end if %>
+
+                <div class="plus-item" onclick="plus_perfiles_AbrirPerfil()">
+                    <i class="fa-regular fa-id-badge"></i>
+                    <span>Perfil</span>           
+                </div>
+
+                <div class="plus-item" onclick="plus_perfiles_AbrirDatosContacto()">
+                    <i class="fa-regular fa-address-book"></i>
+                    <span>Mi Contacto</span>
+                </div>                
+            </div>
+
+            <script>
+                async function plus_perfiles_AbrirSaldos() {
+                    cerrarObjetosPlus(); 
+
+                    let html = ``;
+
+                    try {
+                        const res = await fetch("/core/includes/ajax/saldos_usuarios.asp");
+
+                        if (res.ok) {
+                            const data = await res.json();
+
+                            if (Array.isArray(data) && data.length > 0) {
+                                data.forEach(cuenta => {
+                                    html += `<b>${cuenta.nombre}:</b> ${cuenta.monto}<br>`;
+                                });
+                            } else {
+                                html = "No hay saldos disponibles.";
+                            }
+                        } else {
+                            html = `<span style="color:darkred">No se pudo obtener la información de saldos.</span>`;
+                        }
+
+                    } catch {
+                        html = `<span style="color:darkred">Error de conexión.</span>`;
+                    }
+
+                    Swal.fire({
+                        title: '<b><%= Request.Cookies("nombre") %></b>',
+                        html: html,
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 4000,
+                        background: '#f0f0f0',
+                        customClass: {
+                            popup: 'swal2-popup-perfil',
+                            title: 'swal-titulo-perfil'
+                        }
+                    });
+                }  
+
+                function plus_perfiles_AbrirPerfil() {
+                    window.location.href = "/core/profile.asp";
+                }   
+
+                function plus_perfiles_AbrirDatosContacto() {
+                    window.location.href = "/forma/desktop/apps/agenda/cont/cont_editar.asp?con=<%= Request.Cookies("Usuario") %>";
+                }  
+            </script>
+        <!-- Fin - Plus Perfiles -->

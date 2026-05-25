@@ -1,0 +1,160 @@
+    <!--
+        Este PLUS es un Plus de Sistema.
+        
+        Puede modificarse pero no debe borrarse ya que
+        el Framework 4 lo usa para presentar opciones
+        de los contactos en el modo telefónico
+    -->
+
+    <div id="plus_telCon" class="objeto-plus">
+
+        <div class="plus-item" 
+             id="plus_telCon_Llamar"
+             onclick="plus_telCon_Llamar(obtenerOrigenPlus(this))">
+
+            <i class="fa-solid fa-phone"></i>
+            <span>Llamar por Teléfono</span>           
+        </div>
+
+        <div class="plus-item" 
+             id="plus_telCon_Correo"
+             onclick="plus_telCon_Correo(obtenerOrigenPlus(this))">
+
+            <i class="fa-solid fa-envelope"></i>
+            <span>Enviar Correo</span>
+        </div>                
+
+        <div class="plus-item" 
+             id="plus_telCon_Editar"
+             onclick="plus_telCon_Editar(obtenerOrigenPlus(this))">
+
+            <i class="fa-solid fa-address-book"></i>
+            <span>Editar Contacto</span>
+        </div>            
+
+        <div class="plus-item" 
+             id="plus_telCon_Ocultar"
+             onclick="plus_telCon_Ocultar(obtenerOrigenPlus(this))">
+
+            <i class="fa-solid fa-eye-slash"></i>
+            <span>Ocultar Contacto</span>
+        </div>                
+
+        <div class="plus-item" 
+             id="plus_telCon_Borrar"
+             onclick="plus_telCon_Borrar(obtenerOrigenPlus(this))">
+             
+            <i class="fa-solid fa-trash"></i>
+            <span>Eliminar Contacto</span>
+        </div>
+
+    </div>
+
+    <script>
+        function plus_telCon_Llamar(id) {
+            const div = document.getElementById(id);
+            const telefono = div.dataset.telefono;
+
+            if (!telefono) {
+                alert("Este Contacto No Tiene Número Telefónico");
+            } else {
+                window.location.href = "tel:" + telefono;
+            }
+        }
+
+        function plus_telCon_Correo(id) {
+            const div = document.getElementById(id);
+            const correo = div.dataset.correo;
+
+            if (!correo) {
+                alert("Este Contacto No Tiene Número Dirección de Correo");
+            } else {            
+                window.location.href = "mailto:" + correo;
+            }
+        } 
+
+        function plus_telCon_Editar(id) {
+            window.location.href = "cont_editar.asp?con=" + id;
+        }
+
+        function plus_telCon_Ocultar(id) {
+            window.location.href = "cont_obsoleto.asp?con=" + id;
+        }
+
+        function plus_telCon_Borrar(id) {
+            Swal.fire({
+                title: "¿Desea borrar el contacto seleccionado?",
+                text: "Este proceso no es reversible",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Borrar Contacto"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                        vinculo = "cont_borrar.asp?con=" + id;
+                        window.location.href = vinculo;
+                }
+            });               
+        }  
+        
+        function plus_telCon_Init(idPlus) {
+            const menu = document.getElementById(idPlus);
+            if (!menu) return false;
+
+            const idOrigen = menu.dataset.origen;
+            if (!idOrigen) return false;
+
+            const origen = document.getElementById(idOrigen);
+            if (!origen) return false;
+
+            const nombre   = origen.dataset.nombre   || "este contacto";
+            const telefono = origen.dataset.telefono || "";
+            const correo   = origen.dataset.correo   || "";
+
+            const opcionLlamar  = document.getElementById("plus_telCon_Llamar");
+            const opcionCorreo  = document.getElementById("plus_telCon_Correo");
+            const opcionEditar  = document.getElementById("plus_telCon_Editar");
+            const opcionOcultar = document.getElementById("plus_telCon_Ocultar");
+            const opcionBorrar  = document.getElementById("plus_telCon_Borrar");
+
+            // Reset visual
+            if (opcionLlamar)  opcionLlamar.style.display  = "block";
+            if (opcionCorreo)  opcionCorreo.style.display  = "block";
+            if (opcionEditar)  opcionEditar.style.display  = "block";
+            if (opcionOcultar) opcionOcultar.style.display = "block";
+            if (opcionBorrar)  opcionBorrar.style.display  = "block";
+
+            // Ocultar según datos disponibles
+            if (!telefono && opcionLlamar) opcionLlamar.style.display = "none";
+            if (!correo   && opcionCorreo) opcionCorreo.style.display = "none";
+
+            // Textos dinámicos
+            if (opcionLlamar) {
+                opcionLlamar.querySelector("span").textContent =
+                    `Llamar a ${nombre}`;
+            }
+
+            if (opcionCorreo) {
+                opcionCorreo.querySelector("span").textContent =
+                    `Enviar correo a ${nombre}`;
+            }
+
+            if (opcionEditar) {
+                opcionEditar.querySelector("span").textContent =
+                    `Editar datos de ${nombre}`;
+            }
+
+            if (opcionOcultar) {
+                opcionOcultar.querySelector("span").textContent =
+                    `Ocultar datos de ${nombre}`;
+            }
+
+            if (opcionBorrar) {
+                opcionBorrar.querySelector("span").textContent =
+                    `Eliminar datos de ${nombre}`;
+            }
+
+            return true;
+        }   
+    </script>

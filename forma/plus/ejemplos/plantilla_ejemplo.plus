@@ -1,0 +1,44 @@
+<div id="plus_nomPlus" class="objeto-plus">
+
+    <div class="plus-item" 
+         title = "Ver Registro..."
+         onclick="plus_nomPlus_ver()">
+
+        <i class="fa-regular fa-eye"></i>
+        <span>Ver Datos del Registro</span>
+    </div>
+
+    <div class="plus-item" 
+         title = "Abrir Reporte..."
+         onclick="plus_nomPlus_abrir()" >
+
+        <i class="fa-regular fa-folder"></i>       
+        <span>Abrir Nuevo Presupuesto</span>
+    </div>
+
+    <div class="plus-item" 
+         title = "Eliminar Presupuesto..."
+         onclick="plus_nomPlus_borrar()" >
+
+        <i class="fa-regular fa-trash-can"></i>
+        <span>Eliminar...</span>
+    </div>
+
+    <div class="plus-item"
+         title = "¿Quién me invocó?"
+         onclick="plus_nomPlus_invocadoPor(obtenerOrigenPlus(this))" >
+
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <span>¿Cual es el ID que me invocó?</span>
+    </div>
+</div>
+
+<script>
+    function plus_nomPlus_ver()    { alert("Ver..."); }
+    function plus_nomPlus_abrir()  { alert("Abrir..."); }
+    function plus_nomPlus_borrar() { alert("Borrar..."); }
+
+    function plus_nomPlus_invocadoPor(invocador) {
+        alert("El Plus fue Invocado Por el Elemento " + invocador);
+    }
+</script>

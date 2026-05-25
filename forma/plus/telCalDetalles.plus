@@ -1,0 +1,214 @@
+<script>
+    let plus_calDetalles_data = {};
+</script>
+
+<div id="plus_calDetalles" class="objeto-plus">
+    <div class="plus-item"
+         id="plus_calDetalles_id_editar"
+         onclick="plus_calDetalles_editar()">
+        <i class="fa-solid fa-pencil"></i>
+        <span>Editar Evento</span>
+    </div>
+
+    <div class="plus-item"
+         id="plus_calDetalles_id_transaccion"
+         onclick="plus_calDetalles_ver_transaccion()">
+        <i class="fa-solid fa-money-bill"></i>
+        <span>Editar esta Transacción</span>
+    </div>
+
+    <div class="plus-item"
+         id="plus_calDetalles_id_presupuesto"
+         onclick="plus_calDetalles_presupuesto()">
+        <i class="fa-solid fa-dollar-sign"></i>
+        <span>Editar este Presupuesto</span>
+    </div>    
+
+    <div class="plus-item" 
+         id="plus_calDetalles_id_contacto"
+         onclick="plus_calDetalles_contacto()">
+
+        <i class="fa-solid fa-address-book"></i>
+        <span>Editar Datos de Contacto</span>
+    </div>
+
+    <div class="plus-item" 
+         id="plus_calDetalles_id_llamar"
+         onclick="plus_calDetalles_Llamar()">
+
+        <i class="fa-solid fa-phone"></i>
+        <span>Llamar por Teléfono al Contacto</span>
+    </div>
+
+    <div class="plus-item" 
+         id="plus_calDetalles_id_correo"
+         onclick="plus_calDetalles_Correo()">
+
+        <i class="fa-solid fa-envelope"></i>
+        <span>Enviar Correo al Contacto</span>
+    </div>   
+
+    <div class="plus-item"
+         id="plus_calDetalles_id_eliminar"
+         onclick="plus_calDetalles_borrar()">
+        <i class="fa-regular fa-trash-can"></i>
+        <span>Eliminar Evento</span>
+    </div>
+</div>
+
+<script>
+    function plus_calDetalles_editar() {
+        var vinculo = "cal_eventos_editar.asp?f=&s=" + plus_calDetalles_data.llave;
+        window.location.href = vinculo;        
+    }
+
+    function plus_calDetalles_borrar() {
+        Swal.fire({
+            title: `¿Desea borrar este evento?`,
+            text: "Este proceso no es reversible",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: `Borrar Evento`
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const vinculo = "cal_eventos_borrar.asp?s=" + plus_calDetalles_data.llave;
+                window.location.href = vinculo;
+            }
+        });        
+    }
+
+    function plus_calDetalles_ver_transaccion() {
+        var vinculo = "/forma/mobile/apps/agenda/pre/presupuestos/pre_det_tra_editar.asp?registro=" + plus_calDetalles_data.llave;
+        window.location.href = vinculo;                 
+    }
+
+    function plus_calDetalles_presupuesto() {
+        var vinculo = "/forma/mobile/apps/agenda/pre/presupuestos/pre_det_editar.asp?pre=" + plus_calDetalles_data.presupuesto;
+        window.location.href = vinculo;                 
+    }
+
+    function plus_calDetalles_contacto() {
+        var vinculo = "/forma/mobile/apps/agenda/cont/cont_editar.asp?con=" + plus_calDetalles_data.llave;
+        window.location.href = vinculo;                         
+    }
+
+    function plus_calDetalles_Llamar() {
+        if (!plus_calDetalles_data.contactoTelefono) {
+            alert("Este Contacto No Tiene Número Telefónico");
+        } else {
+            window.location.href = "tel:" + plus_calDetalles_data.contactoTelefono;
+        }
+    }    
+
+    function plus_calDetalles_Correo() {
+        if (!plus_calDetalles_data.contactoCorreo) {
+            alert("Este Contacto No Tiene Número Dirección de Correo");
+        } else {            
+            plus_calDetalles_correoCumpleaños();
+        }
+    }    
+
+    function plus_calDetalles_correoCumpleaños() {
+        if (!plus_calDetalles_data.contactoCorreo) {
+            return;
+        }
+
+        const asunto = `Feliz cumpleaños, ${plus_calDetalles_data.contactoNombre}! 🎉`;
+        const cuerpo = [
+                            `Hola ${plus_calDetalles_data.contactoNombre},`,
+                            "",
+                            "Quería desearte un muy feliz cumpleaños.",
+                            "Espero que tengas un día excelente y un año aún mejor.",
+                            "",
+                            `Un abrazo, ${plus_calDetalles_data.nombreUsuario}.`
+                       ].join("\n");
+
+        const mailtoLink = `mailto:${plus_calDetalles_data.contactoCorreo}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
+        window.location.href = mailtoLink;
+    }
+
+    function plus_calDetalles_Init(idPlus) {
+        /* Control y Seguridad del Objeto Plus ----------------------------------------------------------------------*/
+            const menu = document.getElementById(idPlus);
+            if (!menu) return false;
+
+            const idOrigen = menu.dataset.origen;
+            if (!idOrigen) return false;
+
+            const origen = document.getElementById(idOrigen);
+            if (!origen) return false;
+        /*-----------------------------------------------------------------------------------------------------------*/
+
+        /* Recibir Datos desde el Padre -----------------------------------------------------------------------------*/
+            plus_calDetalles_data = {
+                nombreUsuario:    "<%= Request.Cookies("nombre") %>",
+                tipo:             origen.dataset.tipo || "",
+                llave:            origen.dataset.llave || "",
+                contactoNombre:   origen.dataset.con_nombre || "",
+                contactoTelefono: origen.dataset.con_telefono || "",
+                contactoCorreo:   origen.dataset.con_correo || "",
+                presupuesto:      origen.dataset.presupuesto || ""
+            };            
+
+            const opcionEditar      = document.getElementById("plus_calDetalles_id_editar");
+            const opcionTransaccion = document.getElementById("plus_calDetalles_id_transaccion");
+            const opcionPresupuesto = document.getElementById("plus_calDetalles_id_presupuesto");
+            const opcionContacto    = document.getElementById("plus_calDetalles_id_contacto");
+            const opcionLlamar      = document.getElementById("plus_calDetalles_id_llamar");
+            const opcionCorreo      = document.getElementById("plus_calDetalles_id_correo");
+            const opcionEliminar    = document.getElementById("plus_calDetalles_id_eliminar");
+        /*-----------------------------------------------------------------------------------------------------------*/
+
+        /* Preparar Elementos del Plus  -----------------------------------------------------------------------------*/
+
+            // Reset visual
+
+            if (opcionEditar)      opcionEditar.style.display      = "block";
+            if (opcionTransaccion) opcionTransaccion.style.display = "block";
+            if (opcionPresupuesto) opcionPresupuesto.style.display = "block";
+            if (opcionContacto)    opcionContacto.style.display    = "block";
+            if (opcionLlamar)      opcionLlamar.style.display      = "block";
+            if (opcionCorreo)      opcionCorreo.style.display      = "block";
+            if (opcionEliminar)    opcionEliminar.style.display    = "block";
+
+            // Ocultar según datos disponibles
+
+            if (plus_calDetalles_data.tipo === "con") {
+                // Textos dinámicos
+
+                if (opcionLlamar) { opcionLlamar.querySelector("span").textContent = `Llamar a ${plus_calDetalles_data.contactoNombre}`; }
+                if (opcionCorreo) { opcionCorreo.querySelector("span").textContent = `Enviar correo a ${plus_calDetalles_data.contactoNombre}`; }
+
+                // Verificación de datos
+
+                if (!plus_calDetalles_data.contactoTelefono && opcionLlamar) opcionLlamar.style.display = "none";
+                if (!plus_calDetalles_data.contactoCorreo   && opcionCorreo) opcionCorreo.style.display = "none";
+            } else {
+                opcionContacto.style.display = "none";
+                opcionLlamar.style.display   = "none";
+                opcionCorreo.style.display   = "none";
+            }
+
+            if (plus_calDetalles_data.tipo === "pre") {
+                // Verificación de datos
+
+                if (!plus_calDetalles_data.presupuesto      && opcionPresupuesto)  opcionPresupuesto.style.display = "none";
+                if (!plus_calDetalles_data.presupuesto      && opcionTransaccion)  opcionTransaccion.style.display = "none";
+            } else {
+                opcionPresupuesto.style.display = "none";          
+                opcionTransaccion.style.display = "none";      
+            }
+
+            if (plus_calDetalles_data.tipo === "cal") {
+                // Verificación de datos
+            } else {
+                opcionEditar.style.display = "none";          
+                opcionEliminar.style.display = "none";      
+            }            
+        /*-----------------------------------------------------------------------------------------------------------*/
+
+        return true;
+    }   
+</script>

@@ -1,0 +1,25 @@
+<script language="vbscript" runat="server">
+	Sub Application_OnStart
+		Application("Conectados") = 0
+		Application("Conn") = "Provider=SQLOLEDB; Data Source=.; Initial Catalog=F4DB; User ID=sa; Password=17072111; Charset=UTF8;"
+		Application("Nombre") = "La Extranet de Fabrizio"
+		Application("DefPage") = "/apps/agenda/cal/cal_calendario.asp"
+	End sub
+	
+	Sub Application_OnEnd
+		Application("Conectados") = 0
+	End Sub
+	
+	Sub Session_OnStart
+		Application.Lock
+		Application("Conectados") = Application("Conectados") + 1
+		Application.UnLock
+	End Sub
+	
+	Sub Session_OnEnd
+	   Application.Lock
+	   Application("Conectados") = Application("Conectados") - 1
+	   Application.UnLock
+	   Messenger_Logout
+	End Sub
+</script>

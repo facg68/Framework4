@@ -1,0 +1,196 @@
+    <!--
+        Este PLUS es un Plus de Sistema.
+        
+        Puede modificarse pero no debe borrarse ya que
+        el Framework 4 lo usa para presentar opciones
+        de los presupuestos en el modo telefónico
+    -->
+
+    <div id="plus_telPreDetalles" class="objeto-plus">
+
+        <div class="plus-item" id="plus_telPreDetalles_editar"
+             onclick="plus_telPreDetalles_Editar(obtenerOrigenPlus(this))">
+
+            <i class="fa-solid fa-pencil"></i>
+            <span>Editar Transacción</span>           
+        </div>
+
+        <div class="plus-item" id="plus_telPreDetalles_aplicar"
+             onclick="plus_telPreDetalles_Aplicar(obtenerOrigenPlus(this))">
+
+            <i class="fa-solid fa-square-check"></i>
+            <span>Aplicar Transacción</span>
+        </div>        
+
+        <div class="plus-item" id="plus_telPreDetalles_notas"
+             onclick="plus_telPreDetalles_Nota(obtenerOrigenPlus(this))">
+
+            <i class="fa-solid fa-book"></i>
+            <span>Editar Nota</span>           
+        </div>
+
+        <div class="plus-item" id="plus_telPreDetalles_copiar"
+             onclick="plus_telPreDetalles_Copiar(obtenerOrigenPlus(this))">
+
+            <i class="fa-solid fa-copy"></i>
+            <span>Copiar Transacción</span>
+        </div>                
+
+        <div class="plus-item" id="plus_telPreDetalles_borrar"
+             onclick="plus_telPreDetalles_Borrar(obtenerOrigenPlus(this))">
+
+            <i class="fa-solid fa-trash"></i>
+            <span>Borrar Transacción</span>
+        </div>
+
+    </div>
+
+    <script>
+        function plus_telPreDetalles_Editar(id) {
+            const div = document.getElementById(id);
+            if (!div) { return; }
+
+            const registro = div.dataset.registro;
+            const vinculo = "pre_det_tra_editar.asp?registro=" + registro;
+
+            window.location.href = vinculo;            
+        }
+
+        function plus_telPreDetalles_Aplicar(id) {
+            const div = document.getElementById(id);
+            if (!div) { return; }
+
+            const registro = div.dataset.registro;
+            const vinculo = "pre_det_tra_aplicar.asp?registro=" + registro;
+            window.location.href = vinculo;
+        }        
+
+        function plus_telPreDetalles_Nota(id) {
+            const div = document.getElementById(id);
+            if (!div) { return; }
+
+            const registro = div.dataset.registro;
+            const vinculo = "pre_det_tra_nota.asp?registro=" + registro;
+
+            window.location.href = vinculo;            
+        }
+
+        function plus_telPreDetalles_Copiar(id) {
+            const div = document.getElementById(id);
+            if (!div) { return; }
+
+            const registro = div.dataset.registro;
+            const vinculo = "pre_det_tra_duplicar.asp?registro=" + registro;
+
+            window.location.href = vinculo;            
+        }        
+
+        function plus_telPreDetalles_Borrar(id) {
+            const div = document.getElementById(id);
+
+            if (!div) { return; }
+
+            const { presupuesto, estatus_pre, estatus, archivado, registro } = div.dataset;
+            const imposible = estatus_pre === "0" || estatus === "1" || archivado === "1";
+
+            // No se puede borrar si está cerrado
+            if (imposible) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Operación no permitida",
+                    text: "Una transacción cerrada o archivada no puede ser eliminada"
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: `¿Desea borrar esta transacción?`,
+                text: "Este proceso no es reversible",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: `Borrar`
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const vinculo = `pre_det_tra_borrar.asp?presupuesto=${presupuesto}&registro=${registro}`;
+                    window.location.href = vinculo;
+                }
+            });
+        }  
+
+        function plus_telPreDetalles_Init(idPlus) {
+            // Verificación del Objeto Plus --------------------------------------------------------------------------------------
+                const menu = document.getElementById(idPlus);
+                if (!menu) return false;
+
+                const idOrigen = menu.dataset.origen;
+                if (!idOrigen) return false;
+
+                const origen = document.getElementById(idOrigen);
+                if (!origen) return false;
+            // -------------------------------------------------------------------------------------------------------------------
+
+            // Cargar Datos e Inicializar Acciones -------------------------------------------------------------------------------
+                const presupuesto = origen.dataset.presupuesto;         
+                const estatus_pre = origen.dataset.estatus_pre;         
+                const tipo        = origen.dataset.tipo;                
+                const estatus     = origen.dataset.estatus;
+                const archivado   = origen.dataset.archivado;
+
+                const opcionEditar  = document.getElementById("plus_telPreDetalles_editar");
+                const opcionAplicar = document.getElementById("plus_telPreDetalles_aplicar");
+                const opcionNotas   = document.getElementById("plus_telPreDetalles_notas");
+                const opcionCopiar  = document.getElementById("plus_telPreDetalles_copiar");
+                const opcionBorrar  = document.getElementById("plus_telPreDetalles_borrar");
+
+                if (opcionEditar)  opcionEditar.style.display  = "block";
+                if (opcionAplicar) opcionAplicar.style.display = "block";
+                if (opcionNotas)   opcionNotas.style.display   = "block";
+                if (opcionCopiar)  opcionCopiar.style.display  = "block";
+                if (opcionBorrar)  opcionBorrar.style.display  = "block";
+
+                const spanEditar    = opcionEditar  ? opcionEditar.querySelector("span") : null;
+                const iconoEditar   = opcionEditar  ? opcionEditar.querySelector("i") : null;
+                const iconoAplicar  = opcionAplicar ? opcionAplicar.querySelector("i") : null;
+                const spanAplicar   = opcionAplicar ? opcionAplicar.querySelector("span") : null;
+            // -------------------------------------------------------------------------------------------------------------------
+
+            // Analizar Casos ----------------------------------------------------------------------------------------------------
+                if (opcionAplicar && iconoAplicar && spanAplicar) {         
+                    if (estatus === "1") {
+                        // Transacción cerrada → mostrar como aplicada
+                        iconoAplicar.className = "fa-regular fa-square";
+                        spanAplicar.textContent = "Revertir Aplicación";
+                    } 
+                    else if (estatus === "0") {
+                        // Transacción abierta → permitir reversión de la transacción                        
+                        iconoAplicar.className = "fa-solid fa-square-check";
+                        spanAplicar.textContent = "Aplicar Transacción";
+                    }
+                }                
+
+                if ((tipo === "P" && estatus_pre === "0") || (archivado === "1")) {
+                    spanEditar.textContent = `Ver Transacción`;
+                    iconoEditar.className = "fa-solid fa-eye";
+
+                    opcionNotas.style.display   = "none";
+                    opcionAplicar.style.display = "none";
+                    opcionCopiar.style.display  = "none";
+                    opcionBorrar.style.display  = "none";
+                } else {
+                    if (estatus === "1") {
+                        spanEditar.textContent = `Ver Transacción`;
+                        iconoEditar.className = "fa-solid fa-eye";
+                        opcionAplicar.style.display = "block";
+
+                        opcionNotas.style.display   = "none";
+                        opcionCopiar.style.display  = "none";
+                        opcionBorrar.style.display  = "none";                        
+                    }
+                }
+            // -------------------------------------------------------------------------------------------------------------------
+
+            return true; 
+        }      
+    </script>

@@ -1,0 +1,38 @@
+        <div id="plus_mbSnippets" class="objeto-plus">
+            <%
+                dim plus_mbSnippets_con, plus_mbSnippets_t, plus_mbSnippets_sqlString
+
+                plus_mbSnippets_sqlString = "SELECT s.snippet, p.proNombre AS Nombre, s.snippetTop, s.snippetLeft, " & _
+                                                  " '/forma/desktop/apps/' + p.proSistema + '/' + p.proAction + '.asp' AS Accion " & _
+                                              "FROM dbo.seg_Procesos AS p " & _
+                                        "INNER JOIN dbo.seg_Usuarios_Snippets AS s " & _
+                                                "ON p.proSistema = s.codSistema " & _
+                                               "AND p.proCodigo = s.codProceso " & _
+                                             "WHERE (s.codUsuario = '" & Request.Cookies("Usuario") & "') " & _
+                                          "ORDER BY Nombre;"
+                
+                set plus_mbSnippets_con = Server.CreateObject("ADODB.Connection")
+                plus_mbSnippets_con.open Application("Conn")
+                    set plus_mbSnippets_t = plus_mbSnippets_con.execute(plus_mbSnippets_sqlString)
+                        if not (plus_mbSnippets_t.bof or plus_mbSnippets_t.eof) then
+                            Do
+                                plsSnp = plus_mbSnippets_t("Snippet")
+                                plsTop = plus_mbSnippets_t("snippetTop")
+                                plsLft = plus_mbSnippets_t("snippetLeft")
+                                plsNom = plus_mbSnippets_t("Nombre")
+                                plsAtn = plus_mbSnippets_t("Accion")
+                                
+                                %>
+                                    <div class="plus-item" 
+                                         onclick="openWindow('<%= plsSnp %>', <%= plsTop %>, <%= plsLft %>, '<%= plsNom %>', '<%= plsAtn %>')">
+                                        <span><%= plus_mbSnippets_t("Nombre") %></span>
+                                    </div>                                            
+                                <%
+
+                                plus_mbSnippets_t.MoveNext
+                            Loop Until plus_mbSnippets_t.eof
+                        end if
+                    plus_mbSnippets_t.close: set plus_mbSnippets_t = nothing
+                plus_mbSnippets_con.close: set plus_mbSnippets_con = nothing
+            %>
+        </div>

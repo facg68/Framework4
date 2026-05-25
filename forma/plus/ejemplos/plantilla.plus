@@ -1,0 +1,172 @@
+<!--
+    PLANTILLA PARA LOS PLUS 
+
+    Para facilitar el proceso, se puede reemplazar
+    nomPlus -> nombre o diminutivo de este Plus
+-->
+
+<style>
+    /*
+        Las clases CSS deben empezar con el nombre del Plus
+        o un diminutivo UNICO
+    */
+
+    .plus_nomPlus_clase {
+    }
+
+    /*
+        Las clases de personalización son OPCIONALES.
+        Si se eliminan, el framework aplicará el estilo base.
+    */
+
+    .plus_nomPlus_personalizado {
+        /* background-color */
+        /* color */
+        /* font-size */
+        /* box-shadow */
+        /* padding */
+        /* min-width */
+        /* max-height */
+    }
+
+    .plus_nomPlus_personalizado .plus-item:hover {
+        /* background-color */
+    }
+
+    .plus_nomPlus_personalizado .plus-item:active {
+        /* background-color */
+    }
+</style>
+
+<%
+    '
+    ' Las funciones ASP del Plus deben empezar con 
+    ' el nombre o diminutivo del Plus
+    '
+    function plus_nomPlus_LoQueSea()
+    end function
+%>
+
+<!--
+    El ID del Plus DEBE empezar con "plus_"
+
+    Si no se usan las clases de personalización, se elimina 
+    la clase "nomPlus_personalizado" del <div> del Plus!
+
+    Los id de los <div> no non necesarios, a menos que vayamos 
+    a manipularlos antes de mostrar el Plus al usuario
+
+    -- los cambios se realizan en la función "init()" --
+
+    Nota:
+        Los objetos Plus siempre podrán saber el ID
+        del objeto que lo invoca con el uso de:
+
+        obtenerOrigenPlus(this)    
+
+        Si tenemos la intención de usar un Plus como
+        "cinta", podemos usar "title" para que los
+        iconos tengan una explicación de lo que hacen
+        (es opcional)   
+-->
+
+<script>
+    /*
+        Si vamos a leer información desde el invocador,
+        podemos cargarlo en una estructura "global" que
+        nos permita usar el registro para comprobaciones
+        internas (esto es 100% opcional)
+    */
+
+    let plus_nomPlus_data = {};
+</script>
+
+<div id="plus_nomPlus"
+     class="objeto-plus plus_nomPlus_personalizado">
+
+    <div class="plus-item"
+         id="plus_nomPlus_ID01"
+         title="Ver"
+         onclick="plus_nomPlus_ver(obtenerOrigenPlus(this))">
+        <i class="fa-regular fa-eye"></i>
+        <span>Ver</span>
+    </div>
+
+    <div class="plus-item"
+         id="plus_nomPlus_ID02"
+         title="Abrir"
+         onclick="plus_nomPlus_abrir(obtenerOrigenPlus(this))">
+        <i class="fa-regular fa-folder"></i>
+        <span>Abrir</span>
+    </div>
+
+    <div class="plus-item"
+         id="plus_nomPlus_ID03"
+         title="Eliminar"
+         onclick="plus_nomPlus_borrar(obtenerOrigenPlus(this))">
+        <i class="fa-regular fa-trash-can"></i>
+        <span>Eliminar</span>
+    </div>
+
+    <div class="plus-item"
+         id="plus_nomPlus_ID04"
+         title="Quien me invocó?"
+         onclick="plus_nomPlus_invocadoPor(this)">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <span>¿Quién me invocó?</span>
+    </div>
+
+    <!--
+        ... Mas Opciones ...
+    -->
+</div>
+
+<script>
+    function plus_nomPlus_ver()    { alert("Ver..."); }
+    function plus_nomPlus_abrir()  { alert("Abrir..."); }
+    function plus_nomPlus_borrar() { alert("Borrar..."); }
+
+    function plus_nomPlus_invocadoPor(elemento) {
+        alert("El Plus fue Invocado Por el Elemento " + obtenerOrigenPlus(elemento));
+    }
+
+    function plus_nomPlus_Init(idPlus) {
+        /*
+            Esta función es 100% OPCIONAL pero le permite al objeto Plus recibir datos 
+            del padre y preparar sus opciones ANTES de ser mostrado.
+
+            Si no se necesita, puede eliminarse
+
+            Este primer bloque de codigo no debe modificarse a la ligera...
+        */           
+
+        /* Control y Seguridad del Objeto Plus ----------------------------------------------------------------------*/
+            const menu = document.getElementById(idPlus);
+            if (!menu) return false;
+
+            const idOrigen = menu.dataset.origen;
+            if (!idOrigen) return false;
+
+            const origen = document.getElementById(idOrigen);
+            if (!origen) return false;
+        /*-----------------------------------------------------------------------------------------------------------*/
+
+        /* Recibir Datos desde el Padre -----------------------------------------------------------------------------*/
+            plus_nomPlus_data = {
+                valor_1: origen.dataset.valor_1 || "",
+                valor_2: origen.dataset.valor_2 || "" 
+                ...
+            };          
+        /*-----------------------------------------------------------------------------------------------------------*/
+
+        /* Preparar Elementos del Plus  -----------------------------------------------------------------------------*/
+            /*
+                Código adicional opcional aquí
+
+                Si queremos que se detenga la apertura del
+                Plus, retornamos un FALSE            
+            */
+        /*-----------------------------------------------------------------------------------------------------------*/
+        return true;
+    }
+</script>

@@ -1,0 +1,273 @@
+    <!--
+        Este PLUS es un Plus de Sistema.
+        
+        Puede modificarse pero no debe borrarse ya que
+        el Framework 4 lo usa para presentar opciones
+        de los presupuestos en el modo telefónico
+    -->
+
+    <div id="plus_telPre" class="objeto-plus">
+
+        <div class="plus-item" 
+             id="plus_telPre_editar"
+             onclick="plus_telPre_Editar(obtenerOrigenPlus(this))">
+
+            <i class="fa-solid fa-pencil"></i>
+            <span>Editar Presupuesto</span>           
+        </div>
+
+        <div class="plus-item" 
+             id="plus_telPre_archivar"
+             onclick="plus_telPre_Archivar(obtenerOrigenPlus(this))">
+
+            <i class="fa-solid fa-archive"></i>
+            <span>Archivar Presupuesto</span>           
+        </div>
+
+        <div class="plus-item" 
+             id="plus_telPre_cerrar"
+             onclick="plus_telPre_Cerrar(obtenerOrigenPlus(this))">
+
+            <i class="fa-solid fa-lock"></i>
+            <span>Cerrar Presupuesto</span>
+        </div>                
+
+        <div class="plus-item" 
+             id="plus_telPre_borrar"
+             onclick="plus_telPre_Borrar(obtenerOrigenPlus(this))">
+
+            <i class="fa-solid fa-trash"></i>
+            <span>Borrar Presupuesto</span>
+        </div>
+
+    </div>
+
+    <script>
+        function plus_telPre_Editar(id) {
+            const div = document.getElementById(id);
+            if (!div) { return; }
+
+            const presupuesto = div.dataset.presupuesto;
+            const vinculo = "./presupuestos/pre_det_editar.asp?pre=" + presupuesto;
+
+            window.location.href = vinculo;            
+        }
+
+        function plus_telPre_Archivar(id) {
+            const div = document.getElementById(id);
+
+            if (!div) { return; }
+
+            const tipo = div.dataset.tipo;
+            const estatus = div.dataset.estatus;
+            const presupuesto = div.dataset.presupuesto;
+
+            const descripcion = (tipo === "P") ? "presupuesto" : "modelo";
+
+            // Si está cerrado, no se puede tocar
+            if (estatus === "0") {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Operación no permitida",
+                    text: "Un presupuesto cerrado no puede modificarse"
+                });
+                return;
+            }
+
+            // Si está activo (1) → Archivar
+            if (estatus === "1") {
+                Swal.fire({
+                    title: `Archivar ${descripcion}`,
+                    text: "El elemento puede salir del archivo en otro momento.",
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: `Archivar ${descripcion}`
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const vinculo = "./presupuestos/pre_det_archivar.asp?pre=" + presupuesto;
+                        window.location.href = vinculo;
+                    }
+                });
+                return;
+            }
+
+            // Si está archivado (2) → Desarchivar
+            if (estatus === "2") {
+                Swal.fire({
+                    title: `Recuperar ${descripcion}`,
+                    icon: "question",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: `Recuperar`
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const vinculo = "./presupuestos/pre_det_archivar.asp?pre=" + presupuesto;
+                        window.location.href = vinculo;
+                    }
+                });
+            }
+        }
+
+        function plus_telPre_Cerrar(id) {
+            const div = document.getElementById(id);
+
+            if (!div) { return; }
+            
+            const tipo = div.dataset.tipo;
+            const estatus = div.dataset.estatus;
+            const presupuesto = div.dataset.presupuesto;
+
+            // Validación 1: Tipo
+            if (tipo !== "P") {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Operación no permitida",
+                    text: "Solo los Presupuestos pueden ser Cerrados"
+                });
+                return;
+            }
+
+            // Validación 2: Estatus
+            if (estatus === "0") {
+                Swal.fire({
+                    icon: "info",
+                    title: "Sin acción",
+                    text: "Este Presupuesto ya está Cerrado"
+                });
+                return;
+            }
+
+            // Confirmación final
+            Swal.fire({
+                title: "¿Desea cerrar el presupuesto seleccionado?",
+                text: "Este proceso no es reversible",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Cerrar Presupuesto"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const vinculo = "./presupuestos/pre_det_cerrar.asp?pre=" + presupuesto;
+                    window.location.href = vinculo;
+                }
+            });
+        }
+
+        function plus_telPre_Borrar(id) {
+            const div = document.getElementById(id);
+
+            if (!div) { return; }
+
+            const tipo = div.dataset.tipo;
+            const estatus = div.dataset.estatus;
+            const presupuesto = div.dataset.presupuesto;
+
+            // No se puede borrar si está cerrado
+            if (estatus === "0") {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Operación no permitida",
+                    text: "Un presupuesto cerrado no puede ser eliminado"
+                });
+                return;
+            }
+
+            const descripcion = (tipo === "P") ? "presupuesto" : "modelo";
+
+            Swal.fire({
+                title: `¿Desea borrar este ${descripcion}?`,
+                text: "Este proceso no es reversible",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: `Borrar ${descripcion}`
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const vinculo = "./presupuestos/pre_det_borrar.asp?pre=" + presupuesto;
+                    window.location.href = vinculo;
+                }
+            });
+        }  
+
+        function plus_telPre_Init(idPlus) {
+            // Verificación del Objeto Plus --------------------------------------------------------------------------------------
+                const menu = document.getElementById(idPlus);
+                if (!menu) return false;
+
+                const idOrigen = menu.dataset.origen;
+                if (!idOrigen) return false;
+
+                const origen = document.getElementById(idOrigen);
+                if (!origen) return false;
+            // -------------------------------------------------------------------------------------------------------------------
+
+            // Cargar Datos e Inicializar Acciones -------------------------------------------------------------------------------
+                const tipo = origen.dataset.tipo;
+                const estatus = origen.dataset.estatus;
+                const presupuesto = origen.dataset.presupuesto;
+                const transacciones = origen.dataset.transacciones;
+
+                const opcionEditar   = document.getElementById("plus_telPre_editar");
+                const opcionArchivar = document.getElementById("plus_telPre_archivar");
+                const opcionCerrar   = document.getElementById("plus_telPre_cerrar");
+                const opcionBorrar   = document.getElementById("plus_telPre_borrar");
+
+                const descripcion = (tipo === "M") ? "Modelo" : "Presupuesto";
+
+                if (opcionEditar)   opcionEditar.style.display   = "block";
+                if (opcionArchivar) opcionArchivar.style.display = "block";
+                if (opcionCerrar)   opcionCerrar.style.display   = "block";
+                if (opcionBorrar)   opcionBorrar.style.display   = "block";
+
+                const spanEditar   = opcionEditar.querySelector("span");            
+                const spanArchivar = opcionArchivar.querySelector("span");            
+                const spanCerrar   = opcionCerrar.querySelector("span");            
+                const spanBorrar   = opcionBorrar.querySelector("span");
+            // -------------------------------------------------------------------------------------------------------------------
+
+            // Analizar Casos ----------------------------------------------------------------------------------------------------
+                if (estatus === "0") {                                                              // Si está Cerrado...
+                    spanEditar.textContent = `Ver ${descripcion}`;
+                    opcionBorrar.style.display = "none";
+                    opcionArchivar.style.display = "none";
+                    opcionCerrar.style.display = "none";
+                } else {
+                    spanEditar.textContent = `Editar ${descripcion}`;
+                    spanBorrar.textContent = `Borrar ${descripcion}`;
+                }
+
+                if (tipo === "M" && opcionCerrar) {                                                 // Modelo → nunca se cierra
+                    opcionCerrar.style.display = "none";
+                } else {
+                    spanCerrar.textContent = `Cerrar ${descripcion}`;
+                }
+
+                if (opcionArchivar) {                                                               // Texto dinámico Archivar
+                    if (estatus === "2") {
+                        spanArchivar.textContent = `Sacar ${descripcion} del Archivo`;
+                    } else if (estatus === "1") {
+                        spanArchivar.textContent = `Archivar ${descripcion}`;
+                    }
+                }
+            // -------------------------------------------------------------------------------------------------------------------
+
+            // Verificamos Transacciones -----------------------------------------------------------------------------------------
+                if (tipo === "P" && estatus === "1") {
+                    if (transacciones === "0") {
+                        opcionCerrar.style.display = "none";
+                        opcionBorrar.style.display = "block";
+                    } else {
+                        opcionCerrar.style.display = "block";
+                        opcionBorrar.style.display = "none";
+                    }
+                }   
+            // -------------------------------------------------------------------------------------------------------------------
+
+            return true; 
+        }      
+    </script>
